@@ -16,6 +16,15 @@ ansible/inventory/fase-grupos.yml
 certs/
 tokengit
 
+# Cloned repos (referências externas)
+drawio-desktop/
+fase-grupos/fifa2026-tickets-dev/
+
+# Backups/gravações
+copa-16junho
+copa-17junho
+copa-19junho
+
 # OS
 .DS_Store
 *.swp
@@ -23,7 +32,3 @@ tokengit
 
 # Terraform crash logs
 crash.log
-
-# Clone repos (referência externa)
-fase-grupos/fifa2026-tickets-dev/
-drawio-desktop/
