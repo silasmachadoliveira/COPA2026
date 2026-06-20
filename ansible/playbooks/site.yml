@@ -1,0 +1,6 @@
+---
+- name: Run all post-deploy configurations
+  hosts: all
+
+- import_playbook: configure_windows.yml
+- import_playbook: mount_fileshare_linux.yml

@@ -1,0 +1,41 @@
+---
+- name: "Aula 03 - Configurar SQL Server (restore bacpac)"
+  hosts: data
+  tasks:
+    - name: Download sqlpackage
+      win_get_url:
+        url: https://aka.ms/sqlpackage-windows
+        dest: C:\sqlpackage.zip
+
+    - name: Extract sqlpackage
+      win_unzip:
+        src: C:\sqlpackage.zip
+        dest: C:\sqlpackage
+        creates: C:\sqlpackage\sqlpackage.exe
+
+    - name: Download bacpac
+      win_get_url:
+        url: https://stotfteccopaazure.blob.core.windows.net/copa2026/FIFA2026Tickets.bacpac
+        dest: C:\FIFA2026Tickets.bacpac
+
+    - name: Import bacpac to SQL Server
+      win_shell: |
+        C:\sqlpackage\sqlpackage.exe /Action:Import /TargetServerName:"localhost" /TargetDatabaseName:"FIFA2026Tickets" /TargetUser:"adminsql" /TargetPassword:"{{ sql_admin_password }}" /SourceFile:"C:\FIFA2026Tickets.bacpac" /TargetTrustServerCertificate:True
+      args:
+        creates: C:\sqlpackage_import_done.flag
+      register: bacpac_result
+
+    - name: Create import flag
+      win_copy:
+        content: "imported"
+        dest: C:\sqlpackage_import_done.flag
+      when: bacpac_result.changed
+
+    - name: Validate database
+      win_shell: |
+        sqlcmd -S localhost -U adminsql -P "{{ sql_admin_password }}" -C -Q "SELECT COUNT(*) AS total FROM FIFA2026Tickets.dbo.matches"
+      register: sql_result
+
+    - name: Show match count
+      debug:
+        msg: "{{ sql_result.stdout }}"

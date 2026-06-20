@@ -1,0 +1,24 @@
+all:
+  vars:
+    ansible_user: admincopauser
+    ansible_password: "<SENHA_VMS>"
+    storage_account_name: stcopaazuretftec26
+    storage_account_key: "<STORAGE_KEY>"
+    file_share_name: files-copa
+
+  children:
+    windows:
+      hosts:
+        vm-copa-001:
+          ansible_host: "<IP_PUBLICO_WINDOWS>"
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_port: 5986
+
+    linux:
+      hosts:
+        vm-copa-002:
+          ansible_host: "<IP_PUBLICO_LINUX>"
+          ansible_connection: ssh
+          ansible_ssh_common_args: "-o StrictHostKeyChecking=no"

@@ -1,0 +1,80 @@
+---
+- name: "Aula 05 - Deploy do servidor de Frontend (vm-fend)"
+  hosts: frontend
+  tasks:
+    - name: Install IIS + features
+      win_feature:
+        name:
+          - Web-Server
+          - Web-WebSockets
+          - Web-Stat-Compression
+          - Web-Dyn-Compression
+        include_management_tools: true
+        state: present
+
+    - name: Download URL Rewrite
+      win_get_url:
+        url: https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi
+        dest: C:\urlrewrite.msi
+
+    - name: Install URL Rewrite
+      win_package:
+        path: C:\urlrewrite.msi
+        state: present
+
+    - name: Download ARR
+      win_get_url:
+        url: https://download.microsoft.com/download/E/9/8/E9849D6A-020E-47E4-9FD0-A023E99B54EB/requestRouter_amd64.msi
+        dest: C:\arr.msi
+
+    - name: Install ARR
+      win_package:
+        path: C:\arr.msi
+        state: present
+
+    - name: Enable ARR proxy
+      win_shell: |
+        Set-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter "system.webServer/proxy" -name "enabled" -value "True"
+
+    - name: Download Frontend zip
+      win_get_url:
+        url: https://stotfteccopaazure.blob.core.windows.net/copa2026/fifa2026-web.zip
+        dest: C:\fifa2026-web.zip
+
+    - name: Extract Frontend
+      win_unzip:
+        src: C:\fifa2026-web.zip
+        dest: C:\inetpub\wwwroot\
+        creates: C:\inetpub\wwwroot\fifa2026-web
+
+    - name: Configure web.config with backend IP
+      win_shell: |
+        $webconfig = "C:\inetpub\wwwroot\fifa2026-web\web.config"
+        (Get-Content $webconfig) -replace '__BACKEND_URL__','http://{{ ip_back }}' | Set-Content $webconfig
+
+    - name: Stop Default Web Site and create Frontend site
+      win_shell: |
+        Import-Module WebAdministration
+        Stop-Website -Name "Default Web Site" -ErrorAction SilentlyContinue
+        if (-not (Get-Website -Name "FIFA2026-Web" -ErrorAction SilentlyContinue)) {
+            New-Website -Name "FIFA2026-Web" -PhysicalPath "C:\inetpub\wwwroot\fifa2026-web" -Port 80 -Force
+        }
+        $pool = "IIS:\AppPools\FIFA2026-Web"
+        if (Test-Path $pool) { Set-ItemProperty $pool -Name "managedRuntimeVersion" -Value "" }
+        Start-Website -Name "FIFA2026-Web"
+
+    - name: Smoke test Frontend
+      win_shell: |
+        $retries = 0
+        do {
+          Start-Sleep -Seconds 3
+          $retries++
+          try { $r = (Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing -ErrorAction Stop).StatusCode; break }
+          catch { if ($retries -ge 6) { throw "Frontend nao respondeu apos 18s" } }
+        } while ($true)
+        $r
+      register: front_status
+
+    - name: Show Frontend status
+      debug:
+        msg: "HTTP {{ front_status.stdout_lines[0] }}"

@@ -1,0 +1,29 @@
+# Secrets & state
+terraform.tfvars
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ansible secrets
+ansible/inventory/hosts.yml
+ansible/inventory/fase-grupos.yml
+!ansible/inventory/*.example
+
+# Certificates & credentials
+certs/
+tokengit
+
+# OS
+.DS_Store
+*.swp
+*.swo
+
+# Terraform crash logs
+crash.log
+
+# Clone repos (referência externa)
+fase-grupos/fifa2026-tickets-dev/
+drawio-desktop/

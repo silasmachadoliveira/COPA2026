@@ -1,0 +1,4 @@
+subscription_id    = "<SUA_SUBSCRIPTION_ID>"
+admin_password     = "<SENHA_VMS_FRONTEND_BACKEND>"
+sql_admin_password = "<SENHA_SQL_SERVER>"
+my_ip              = "<SEU_IP_PUBLICO>"

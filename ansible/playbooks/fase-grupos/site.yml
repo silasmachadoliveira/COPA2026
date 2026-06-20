@@ -1,0 +1,4 @@
+---
+- import_playbook: configure_sql.yml
+- import_playbook: configure_backend.yml
+- import_playbook: configure_frontend.yml

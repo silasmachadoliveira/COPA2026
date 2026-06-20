@@ -1,0 +1,64 @@
+---
+- name: "Aula 07 - Certificado HTTPS (Let's Encrypt via Posh-ACME)"
+  hosts: frontend
+  vars:
+    domain: silasmachado.cloud
+    email: silas.machadoliveira@gmail.com
+    pfx_pass: __CERT_PASSWORD__
+  tasks:
+    - name: Install Posh-ACME module
+      win_shell: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        if (-not (Get-Module -ListAvailable -Name Posh-ACME)) {
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            Install-Module -Name Posh-ACME -Scope CurrentUser -Force
+        }
+
+    - name: Set ACME server to production
+      win_shell: |
+        Import-Module Posh-ACME
+        Set-PAServer LE_PROD
+
+    - name: Request certificate with Manual DNS plugin
+      win_shell: |
+        Import-Module Posh-ACME
+        $domain = "{{ domain }}"
+        # Check if we already have a valid cert
+        $cert = Get-PACertificate -ErrorAction SilentlyContinue
+        if ($cert -and $cert.NotAfter -gt (Get-Date).AddDays(7)) {
+            Write-Host "Certificate still valid until $($cert.NotAfter)"
+            $cert.PfxFullChain
+        } else {
+            Write-Host "CERT_NEEDED"
+        }
+      register: cert_check
+
+    - name: Show certificate status
+      debug:
+        msg: "{{ cert_check.stdout }}"
+
+    - name: Import existing certificate to IIS (if valid)
+      win_shell: |
+        Import-Module Posh-ACME
+        $cert = Get-PACertificate
+        $pfxPath = $cert.PfxFullChain
+        $pass = ConvertTo-SecureString -String "{{ pfx_pass }}" -AsPlainText -Force
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $pass -ErrorAction SilentlyContinue
+        # Create HTTPS binding
+        Import-Module WebAdministration
+        $thumbprint = (Get-ChildItem Cert:\LocalMachine\My | Where-Object { $_.Subject -like "*{{ domain }}*" } | Sort-Object NotAfter -Descending | Select-Object -First 1).Thumbprint
+        if ($thumbprint) {
+            $binding = Get-WebBinding -Name "FIFA2026-Web" -Protocol https -ErrorAction SilentlyContinue
+            if (-not $binding) {
+                New-WebBinding -Name "FIFA2026-Web" -Protocol https -Port 443 -HostHeader "{{ domain }}"
+                $bindingPath = "IIS:\SslBindings\0.0.0.0!443!{{ domain }}"
+                if (-not (Test-Path $bindingPath)) {
+                    Get-Item "Cert:\LocalMachine\My\$thumbprint" | New-Item $bindingPath -ErrorAction SilentlyContinue
+                }
+            }
+            New-NetFirewallRule -DisplayName "HTTPS 443" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow -ErrorAction SilentlyContinue
+            Write-Host "HTTPS binding configured with thumbprint: $thumbprint"
+        } else {
+            Write-Host "NO_CERT_FOUND"
+        }
+      when: "'CERT_NEEDED' not in cert_check.stdout"

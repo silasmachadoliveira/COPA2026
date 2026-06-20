@@ -1,0 +1,3 @@
+subscription_id = "<SUA_SUBSCRIPTION_ID>"
+admin_password  = "<SUA_SENHA_FORTE>"
+my_ip           = "<SEU_IP_PUBLICO>"

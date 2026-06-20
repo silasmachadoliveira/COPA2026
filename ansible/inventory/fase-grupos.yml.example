@@ -1,0 +1,39 @@
+all:
+  vars:
+    sql_admin_password: "<SENHA_SQL>"
+    ip_back: "<IP_PRIVADO_BACKEND>"
+    ip_db: "<IP_PRIVADO_SQL>"
+
+  children:
+    frontend:
+      hosts:
+        vm-fend:
+          ansible_host: "<IP_PUBLICO_FRONTEND>"
+          ansible_user: tftecadmin
+          ansible_password: "<SENHA_VMS>"
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_port: 5986
+
+    backend:
+      hosts:
+        vm-bend:
+          ansible_host: "<IP_PUBLICO_BACKEND>"
+          ansible_user: tftecadmin
+          ansible_password: "<SENHA_VMS>"
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_port: 5986
+
+    data:
+      hosts:
+        vm-data:
+          ansible_host: "<IP_PUBLICO_SQL>"
+          ansible_user: adminsql
+          ansible_password: "<SENHA_SQL>"
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_port: 5986

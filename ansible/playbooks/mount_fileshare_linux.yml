@@ -1,0 +1,50 @@
+---
+- name: Mount Azure File Share on Linux
+  hosts: linux
+  become: true
+  vars:
+    mount_point: /mnt/files-copa
+    smb_path: "//{{ storage_account_name }}.file.core.windows.net/{{ file_share_name }}"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - cifs-utils
+          - net-tools
+        state: present
+        update_cache: true
+
+    - name: Create mount point
+      file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure credentials directory exists
+      file:
+        path: /etc/smbcredentials
+        state: directory
+        mode: "0700"
+
+    - name: Create credentials file
+      copy:
+        dest: "/etc/smbcredentials/{{ storage_account_name }}.cred"
+        content: |
+          username={{ storage_account_name }}
+          password={{ storage_account_key }}
+        mode: "0600"
+
+    - name: Add fstab entry
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ smb_path }} {{ mount_point }} cifs nofail,credentials=/etc/smbcredentials/{{ storage_account_name }}.cred,dir_mode=0777,file_mode=0777,serverino,nosharesock,actimeo=30 0 0"
+        state: present
+
+    - name: Mount share
+      mount:
+        path: "{{ mount_point }}"
+        src: "{{ smb_path }}"
+        fstype: cifs
+        opts: "nofail,credentials=/etc/smbcredentials/{{ storage_account_name }}.cred,dir_mode=0777,file_mode=0777,serverino,nosharesock,actimeo=30"
+        state: mounted

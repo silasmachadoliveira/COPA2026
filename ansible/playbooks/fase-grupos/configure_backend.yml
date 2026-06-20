@@ -1,0 +1,122 @@
+---
+- name: "Aula 04 - Deploy do servidor de API (vm-bend)"
+  hosts: backend
+  tasks:
+    - name: Install IIS + features
+      win_feature:
+        name:
+          - Web-Server
+          - Web-WebSockets
+          - Web-Stat-Compression
+          - Web-Dyn-Compression
+        include_management_tools: true
+        state: present
+
+    - name: Check if Node.js installed
+      win_stat:
+        path: C:\Program Files\nodejs\node.exe
+      register: node_check
+
+    - name: Download Node.js LTS
+      win_get_url:
+        url: https://nodejs.org/dist/v20.19.2/node-v20.19.2-x64.msi
+        dest: C:\node.msi
+      when: not node_check.stat.exists
+
+    - name: Install Node.js
+      win_package:
+        path: C:\node.msi
+        state: present
+      when: not node_check.stat.exists
+
+    - name: Check if iisnode installed
+      win_stat:
+        path: C:\Program Files\iisnode\iisnode.dll
+      register: iisnode_check
+
+    - name: Download iisnode
+      win_get_url:
+        url: https://github.com/Azure/iisnode/releases/download/v0.2.26/iisnode-full-v0.2.26-x64.msi
+        dest: C:\iisnode.msi
+      when: not iisnode_check.stat.exists
+
+    - name: Install iisnode
+      win_package:
+        path: C:\iisnode.msi
+        state: present
+      when: not iisnode_check.stat.exists
+
+    - name: Download URL Rewrite
+      win_get_url:
+        url: https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi
+        dest: C:\urlrewrite.msi
+
+    - name: Install URL Rewrite
+      win_package:
+        path: C:\urlrewrite.msi
+        state: present
+
+    - name: Unlock IIS handlers and modules
+      win_shell: |
+        & "$env:windir\system32\inetsrv\appcmd.exe" unlock config -section:system.webServer/handlers
+        & "$env:windir\system32\inetsrv\appcmd.exe" unlock config -section:system.webServer/modules
+        iisreset
+
+    - name: Download API zip
+      win_get_url:
+        url: https://stotfteccopaazure.blob.core.windows.net/copa2026/fifa2026-api.zip
+        dest: C:\fifa2026-api.zip
+
+    - name: Extract API
+      win_unzip:
+        src: C:\fifa2026-api.zip
+        dest: C:\inetpub\wwwroot\
+        creates: C:\inetpub\wwwroot\fifa2026-api
+
+    - name: Create .env file
+      win_copy:
+        content: |
+          DB_SERVER={{ ip_db }}
+          DB_PORT=1433
+          DB_USER=adminsql
+          DB_PASSWORD={{ sql_admin_password }}
+          DB_NAME=FIFA2026Tickets
+          PORT=80
+          HOST=0.0.0.0
+          JWT_SECRET=copa2026-tftec-jwt-secret-key-ultra-segura
+          JWT_EXPIRES_IN=7d
+          FRONTEND_URL=*
+        dest: C:\inetpub\wwwroot\fifa2026-api\.env
+
+    - name: Set IIS_IUSRS permissions
+      win_shell: |
+        $acl = Get-Acl "C:\inetpub\wwwroot\fifa2026-api"
+        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule("IIS_IUSRS", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+        $acl.SetAccessRule($rule)
+        Set-Acl "C:\inetpub\wwwroot\fifa2026-api" $acl
+
+    - name: Stop Default Web Site and create API site
+      win_shell: |
+        Import-Module WebAdministration
+        Stop-Website -Name "Default Web Site" -ErrorAction SilentlyContinue
+        if (-not (Get-Website -Name "FIFA2026-API" -ErrorAction SilentlyContinue)) {
+            New-Website -Name "FIFA2026-API" -PhysicalPath "C:\inetpub\wwwroot\fifa2026-api" -Port 80 -Force
+        }
+        Set-ItemProperty "IIS:\AppPools\FIFA2026-API" -Name "managedRuntimeVersion" -Value ""
+        Start-Website -Name "FIFA2026-API"
+
+    - name: Smoke test API
+      win_shell: |
+        $retries = 0
+        do {
+          Start-Sleep -Seconds 5
+          $retries++
+          try { $r = Invoke-RestMethod -Uri "http://localhost/api/health" -ErrorAction Stop; break }
+          catch { if ($retries -ge 6) { throw "API nao respondeu apos 30s" } }
+        } while ($true)
+        $r | ConvertTo-Json
+      register: api_health
+
+    - name: Show API health
+      debug:
+        msg: "{{ api_health.stdout }}"
