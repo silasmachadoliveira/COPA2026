@@ -1,0 +1,178 @@
+<mxfile host="app.diagrams.net" modified="2026-06-20T15:00:00.000Z" agent="drawio" version="24.0.0">
+  <diagram id="copa2026" name="FIFA 2026 Tickets">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="2" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Copa do Mundo Azure 2026 — FIFA 2026 Tickets&lt;/b&gt;&lt;/font&gt;&lt;br&gt;3 VMs · 2 VNets (2 Regiões) · 2 NSGs · Peering Global" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="500" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Internet -->
+        <mxCell id="3" value="Internet&lt;br&gt;Torcedor (navegador / celular)" style="shape=image;html=1;verticalAlign=middle;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/for-your-interface-free-samples/128/Globe-128.png;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="70" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Admin -->
+        <mxCell id="4" value="Você (admin)&lt;br&gt;RDP 3389 — Somente MEU_IP" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/identity/Users.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="750" y="70" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Resource Group -->
+        <mxCell id="5" value="&lt;b&gt;rg-prd-tk-cin-001&lt;/b&gt; (recursos em 2 regiões)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="150" width="900" height="800" as="geometry" />
+        </mxCell>
+
+        <!-- Region Central India - VNet -->
+        <mxCell id="10" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;opacity=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="180" width="860" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="&lt;b&gt;vnet-prd-inf-cin-001&lt;/b&gt; — Central India  10.20.0.0/16" style="aspect=fixed;html=1;points=[];align=left;image;fontSize=10;image=img/lib/azure2/networking/Virtual_Networks.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="110" y="185" width="40" height="23" as="geometry" />
+        </mxCell>
+
+        <!-- Subnet Frontend -->
+        <mxCell id="20" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="120" y="220" width="400" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="&lt;b&gt;snet-prd-inf-fend-cin-001&lt;/b&gt;  10.20.1.0/24" style="aspect=fixed;html=1;points=[];align=left;image;fontSize=9;image=img/lib/azure2/networking/Subnet.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="130" y="225" width="35" height="21" as="geometry" />
+        </mxCell>
+
+        <!-- Subnet Backend -->
+        <mxCell id="22" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="540" y="220" width="400" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="&lt;b&gt;snet-prd-inf-bend-cin-001&lt;/b&gt;  10.20.2.0/24" style="aspect=fixed;html=1;points=[];align=left;image;fontSize=9;image=img/lib/azure2/networking/Subnet.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="550" y="225" width="35" height="21" as="geometry" />
+        </mxCell>
+
+        <!-- VM Frontend -->
+        <mxCell id="30" value="&lt;b&gt;vm-prd-tk-fend-cin-001&lt;/b&gt;&lt;br&gt;FRONTEND · ponto de entrada" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=10;image=img/lib/azure2/compute/Virtual_Machine.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="270" y="270" width="55" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="• Windows Server 2022 · B2als_v2&lt;br&gt;• IIS · 80/443 → sites do React&lt;br&gt;• URL Rewrite + ARR (proxy reverso)&lt;br&gt;• web.config /api/* → backend:80&lt;br&gt;• Certificado HTTPS (Let's Encrypt)&lt;br&gt;• 🌐 IP Público" style="text;html=1;align=left;verticalAlign=top;fontSize=9;fillColor=#d5e8d4;rounded=1;strokeColor=#82b366;spacingLeft=5;spacingRight=5;spacingTop=3;" vertex="1" parent="1">
+          <mxGeometry x="150" y="350" width="250" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- VM Backend -->
+        <mxCell id="32" value="&lt;b&gt;vm-prd-tk-bend-cin-001&lt;/b&gt;&lt;br&gt;BACKEND · API" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=10;image=img/lib/azure2/compute/Virtual_Machine.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="690" y="270" width="55" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="• Windows Server 2022 · B2als_v2&lt;br&gt;• IIS + iisnode · porta 80&lt;br&gt;• Node — fifa2026-api (Express)&lt;br&gt;• .env → IP privado da vm-data (10.30.1.x)&lt;br&gt;• 🔒 Sem IP público (hardening)" style="text;html=1;align=left;verticalAlign=top;fontSize=9;fillColor=#fff2cc;rounded=1;strokeColor=#d6b656;spacingLeft=5;spacingRight=5;spacingTop=3;" vertex="1" parent="1">
+          <mxGeometry x="570" y="350" width="260" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow Internet → Frontend -->
+        <mxCell id="40" edge="1" parent="1" source="3" target="30" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;strokeWidth=2;labelBackgroundColor=none;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="41" value="&lt;b&gt;https · 443/80&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=9;labelBackgroundColor=#dae8fc;" vertex="1" connectable="0" parent="40">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Arrow Frontend → Backend -->
+        <mxCell id="42" edge="1" parent="1" source="30" target="32" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;strokeWidth=2;labelBackgroundColor=none;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="43" value="&lt;b&gt;http · 80&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=9;labelBackgroundColor=#fff2cc;" vertex="1" connectable="0" parent="42">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Region Australia East - VNet -->
+        <mxCell id="50" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="620" width="860" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="51" value="&lt;b&gt;vnet-prd-inf-aes-001&lt;/b&gt; — Australia East  10.30.0.0/16" style="aspect=fixed;html=1;points=[];align=left;image;fontSize=10;image=img/lib/azure2/networking/Virtual_Networks.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="110" y="625" width="40" height="23" as="geometry" />
+        </mxCell>
+
+        <!-- Subnet Data -->
+        <mxCell id="52" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="250" y="660" width="500" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="&lt;b&gt;snet-prd-inf-data-aes-001&lt;/b&gt;  10.30.1.0/24" style="aspect=fixed;html=1;points=[];align=left;image;fontSize=9;image=img/lib/azure2/networking/Subnet.svg;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="260" y="665" width="35" height="21" as="geometry" />
+        </mxCell>
+
+        <!-- VM Data (SQL) -->
+        <mxCell id="60" value="&lt;b&gt;vm-prd-tk-data-aes-001&lt;/b&gt;&lt;br&gt;BANCO · SQL Server 2022" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=10;image=img/lib/azure2/databases/SQL_Server.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="700" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="61" value="• SQL Server 2022 Developer (imagem pronta)&lt;br&gt;• Windows Server 2022 · B2als_v2&lt;br&gt;• Autenticação SQL · adminsql (wizard)&lt;br&gt;• Database FIFA2026Tickets (bacpac via SSMS)&lt;br&gt;• Aceita 1433 somente de 10.20.0.0/16 (VNet do app)&lt;br&gt;• 3 discos 8GB (Data / Log / TempDB)&lt;br&gt;• 🔒 Sem IP público (hardening)" style="text;html=1;align=left;verticalAlign=top;fontSize=9;fillColor=#f8cecc;rounded=1;strokeColor=#b85450;spacingLeft=5;spacingRight=5;spacingTop=3;" vertex="1" parent="1">
+          <mxGeometry x="300" y="780" width="350" height="115" as="geometry" />
+        </mxCell>
+
+        <!-- VNet Peering icon -->
+        <mxCell id="70" value="&lt;b&gt;VNet Peering Global&lt;/b&gt;&lt;br&gt;IPs privados entre regiões" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Virtual_Network_Peering.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="565" width="50" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow Backend → SQL (via Peering) -->
+        <mxCell id="71" edge="1" parent="1" source="32" target="60" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;labelBackgroundColor=none;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="718" y="580" />
+              <mxPoint x="485" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="72" value="&lt;b&gt;mssql · TCP 1433&lt;/b&gt;&lt;br&gt;(IP privado, via peering)" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=9;labelBackgroundColor=#f8cecc;" vertex="1" connectable="0" parent="71">
+          <mxGeometry x="-0.3" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- NSG CIN -->
+        <mxCell id="80" value="&lt;b&gt;nsg-prd-inf-cin-001&lt;/b&gt;&lt;br&gt;associada às 2 subnets" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Network_Security_Groups.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="250" width="50" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="81" value="• 80/443 · TCP · origem Internet&lt;br&gt;• 3389 · TCP · origem MEU_IP&lt;br&gt;• 80 · TCP · origem 10.20.0.0/16" style="text;html=1;align=left;verticalAlign=top;fontSize=8;fillColor=#f5f5f5;rounded=1;strokeColor=#CCCCCC;spacingLeft=5;spacingTop=3;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="320" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- NSG AES -->
+        <mxCell id="82" value="&lt;b&gt;nsg-prd-inf-aes-001&lt;/b&gt;&lt;br&gt;associada à subnet de banco" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Network_Security_Groups.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="690" width="50" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="83" value="• 1433 · TCP · origem 10.20.0.0/16 ⚠️&lt;br&gt;• 3389 · TCP · origem MEU_IP&lt;br&gt;⚠️ origem é a VNet do APP (via peering)" style="text;html=1;align=left;verticalAlign=top;fontSize=8;fillColor=#f5f5f5;rounded=1;strokeColor=#CCCCCC;spacingLeft=5;spacingTop=3;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="760" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Admin RDP arrow (dashed) -->
+        <mxCell id="90" edge="1" parent="1" source="4" target="30" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#999999;strokeWidth=1;dashed=1;labelBackgroundColor=none;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="774" y="160" />
+              <mxPoint x="298" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="91" value="RDP 3389 (jump host após Fase 8)" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=8;fontStyle=2;labelBackgroundColor=#f5f5f5;" vertex="1" connectable="0" parent="90">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Hardening box -->
+        <mxCell id="100" value="&lt;b&gt;Fase 8 — Hardening final&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Remove o IP público de vm-bend e vm-data&lt;br&gt;• Admin via jump host: RDP na vm-fend&lt;br&gt;  — salta pelos IPs privados (10.20.2.x / 10.30.1.x)&lt;br&gt;• Só a vm-fend permanece exposta (80/443)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="430" width="250" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Design decisions box -->
+        <mxCell id="101" value="&lt;b&gt;Decisões de design&lt;/b&gt;&lt;br&gt;&lt;br&gt;• 2 regiões: limite de 4 vCPU/região (3× B2s = 6 vCPU)&lt;br&gt;  → peering global&lt;br&gt;• 1 NSG por VNet, associada às subnets (não por NIC)&lt;br&gt;  — menos objetos&lt;br&gt;• Sem CORS: /api/* na mesma origem, ARR faz o proxy&lt;br&gt;  reverso p/ :80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="560" width="270" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Footer -->
+        <mxCell id="110" value="&lt;b&gt;Fluxo:&lt;/b&gt; ❶ Torcedor acessa o frontend (80/443) → ❷ ARR reescreve /api/* para o backend (80) → ❸ API consulta o SQL pelo IP privado via peering (1433)&lt;br&gt;Seta tracejada = administração RDP (3389, somente MEU_IP) nos IPs públicos das 3 VMs — substituída pelo acesso via jump host (vm-fend) na Fase 8." style="text;html=1;align=left;verticalAlign=middle;fontSize=9;fillColor=none;strokeColor=none;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="950" width="850" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Author -->
+        <mxCell id="111" value="&lt;b&gt;Silas Machado&lt;/b&gt; · Cloud &amp; Infrastructure Specialist · Copa do Mundo Azure 2026 · TFTEC Prime" style="text;html=1;align=right;verticalAlign=middle;fontSize=9;fillColor=none;strokeColor=none;fontColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="800" y="955" width="400" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
