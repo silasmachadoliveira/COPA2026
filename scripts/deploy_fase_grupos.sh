@@ -73,25 +73,46 @@ echo "  DNS: copaazure2026.silasmachado.cloud → $FEND_IP"
 
 echo ""
 echo "=== [6/7] Aula 07: Certificado HTTPS ==="
-# Emitir certificado (ou renovar se existir)
-sudo certbot certonly \
-  --authenticator dns-azure \
-  --dns-azure-credentials "$CERTS_DIR/azure-dns-credentials.ini" \
-  --dns-azure-propagation-seconds 30 \
-  -d "*.silasmachado.cloud" \
-  -d "silasmachado.cloud" \
-  --email silas.machadoliveira@gmail.com \
-  --agree-tos \
-  --non-interactive \
-  --force-renewal
 
-# Converter para PFX
-sudo openssl pkcs12 -export \
-  -out "$CERTS_DIR/silasmachado.cloud.pfx" \
-  -inkey /etc/letsencrypt/live/silasmachado.cloud/privkey.pem \
-  -in /etc/letsencrypt/live/silasmachado.cloud/fullchain.pem \
-  -passout pass:__CERT_PASSWORD__
-sudo chown silas:silas "$CERTS_DIR/silasmachado.cloud.pfx"
+# Verificar se certificado já existe e é válido (>7 dias)
+CERT_VALID=false
+if [ -f /etc/letsencrypt/live/silasmachado.cloud/fullchain.pem ]; then
+  EXPIRY=$(sudo openssl x509 -enddate -noout -in /etc/letsencrypt/live/silasmachado.cloud/fullchain.pem | cut -d= -f2)
+  EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s)
+  NOW_EPOCH=$(date +%s)
+  DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
+  if [ "$DAYS_LEFT" -gt 7 ]; then
+    echo "  Certificado válido (expira em ${DAYS_LEFT} dias). Reutilizando."
+    CERT_VALID=true
+  else
+    echo "  Certificado expira em ${DAYS_LEFT} dias. Renovando..."
+  fi
+fi
+
+if [ "$CERT_VALID" = false ]; then
+  sudo certbot certonly \
+    --authenticator dns-azure \
+    --dns-azure-credentials "$CERTS_DIR/azure-dns-credentials.ini" \
+    --dns-azure-propagation-seconds 30 \
+    -d "*.silasmachado.cloud" \
+    -d "silasmachado.cloud" \
+    --email silas.machadoliveira@gmail.com \
+    --agree-tos \
+    --non-interactive
+fi
+
+# Converter para PFX (só se não existe ou cert foi renovado)
+if [ "$CERT_VALID" = false ] || [ ! -f "$CERTS_DIR/silasmachado.cloud.pfx" ]; then
+  sudo openssl pkcs12 -export \
+    -out "$CERTS_DIR/silasmachado.cloud.pfx" \
+    -inkey /etc/letsencrypt/live/silasmachado.cloud/privkey.pem \
+    -in /etc/letsencrypt/live/silasmachado.cloud/fullchain.pem \
+    -passout pass:__CERT_PASSWORD__
+  sudo chown silas:silas "$CERTS_DIR/silasmachado.cloud.pfx"
+  echo "  PFX gerado."
+else
+  echo "  PFX já existe. Reutilizando."
+fi
 
 # Copiar e configurar na vm-fend
 export OPENSSL_CONF=/tmp/openssl-legacy.cnf
