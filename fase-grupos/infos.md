@@ -9,7 +9,7 @@
 | Item | Valor |
 |---|---|
 | **URL** | https://copaazure2026.silasmachado.cloud |
-| **Login Admin** | `admin@fifa2026.com` / `__APP_PASSWORD__` |
+| **Login Admin** | `admin@fifa2026.com` / `<APP_ADMIN_PASSWORD>` |
 | **Certificado** | GeoTrust (App Service Managed Certificate) |
 | **DNS Zone** | `silasmachado.cloud` → `rg-prd-dns-001` |
 | **CNAME** | `copaazure2026` → `app-prd-tk-fend-cin-sm001.azurewebsites.net` |
@@ -60,8 +60,8 @@
 
 | Recurso | Usuário | Senha |
 |---|---|---|
-| SQL Server (adminsql) | `adminsql` | `__SQL_PASSWORD__` |
-| App Admin | `admin@fifa2026.com` | `__APP_PASSWORD__` |
+| SQL Server (adminsql) | `adminsql` | `<SQL_PASSWORD>` |
+| App Admin | `admin@fifa2026.com` | `<APP_ADMIN_PASSWORD>` |
 
 ---
 
@@ -78,7 +78,7 @@
 | `DB_PORT` | `1433` |
 | `DB_NAME` | `FIFA2026Tickets` |
 | `DB_USER` | `adminsql` |
-| `DB_PASSWORD` | `__SQL_PASSWORD__` |
+| `DB_PASSWORD` | `<SQL_PASSWORD>` |
 
 ### Connection String
 

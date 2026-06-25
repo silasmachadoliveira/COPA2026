@@ -20,7 +20,7 @@ IP_DB=$(az vm show -g "$RG" -n vm-prd-tk-data-aes-001 --show-details --query pri
 cat > "$INVENTORY" <<EOF
 all:
   vars:
-    sql_admin_password: "__SQL_PASSWORD__"
+    sql_admin_password: "${SQL_ADMIN_PASSWORD:-__SQL_PASSWORD__}"
     ip_back: "${IP_BACK}"
     ip_db: "${IP_DB}"
 
@@ -30,7 +30,7 @@ all:
         vm-fend:
           ansible_host: "${FEND_IP}"
           ansible_user: tftecadmin
-          ansible_password: "__VM_PASSWORD__"
+          ansible_password: "${VM_ADMIN_PASSWORD:-__VM_PASSWORD__}"
           ansible_connection: winrm
           ansible_winrm_transport: ntlm
           ansible_winrm_server_cert_validation: ignore
@@ -41,7 +41,7 @@ all:
         vm-bend:
           ansible_host: "${BEND_IP}"
           ansible_user: tftecadmin
-          ansible_password: "__VM_PASSWORD__"
+          ansible_password: "${VM_ADMIN_PASSWORD:-__VM_PASSWORD__}"
           ansible_connection: winrm
           ansible_winrm_transport: ntlm
           ansible_winrm_server_cert_validation: ignore
@@ -52,7 +52,7 @@ all:
         vm-data:
           ansible_host: "${DATA_IP}"
           ansible_user: adminsql
-          ansible_password: "__SQL_PASSWORD__"
+          ansible_password: "${SQL_ADMIN_PASSWORD:-__SQL_PASSWORD__}"
           ansible_connection: winrm
           ansible_winrm_transport: ntlm
           ansible_winrm_server_cert_validation: ignore

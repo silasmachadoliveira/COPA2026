@@ -17,7 +17,7 @@ cat > "$INVENTORY" <<EOF
 all:
   vars:
     ansible_user: admincopauser
-    ansible_password: "__VM_PASSWORD__"
+    ansible_password: "${VM_ADMIN_PASSWORD:-__VM_PASSWORD__}"
     storage_account_name: ${ST_NAME}
     storage_account_key: "${ST_KEY}"
     file_share_name: files-copa
